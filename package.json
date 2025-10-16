@@ -9,6 +9,7 @@
   },
   "author": "Ben Tefay",
   "license": "MIT",
+  "type": "module",
   "packageManager": "yarn@4.10.3",
   "workspaces": [
     "packages/*"
@@ -28,13 +29,17 @@
     "@types/node": "24.7.2",
     "@typescript-eslint/eslint-plugin": "8.46.1",
     "@typescript-eslint/parser": "8.46.1",
+    "dts-tree-sitter": "1.0.0",
     "eslint": "9.37.0",
     "eslint-config-prettier": "10.1.8",
     "prettier": "3.6.2",
+    "tree-sitter": "0.21.1",
+    "tree-sitter-cli": "0.23.2",
+    "@elm-tooling/tree-sitter-elm": "5.7.0",
     "tsx": "4.20.6",
     "typescript": "5.9.3"
   },
   "engines": {
-    "node": ">=20.0.0"
+    "node": ">=24.0.0"
   }
 }
