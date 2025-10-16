@@ -1,3 +1,40 @@
 {
-  "packageManager": "yarn@4.10.3"
+  "name": "elm-to-react",
+  "version": "0.1.0",
+  "private": true,
+  "description": "A source-to-source transpiler that converts Elm projects into TypeScript/React code",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bentefay/elm-to-react.git"
+  },
+  "author": "Ben Tefay",
+  "license": "MIT",
+  "packageManager": "yarn@4.10.3",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "yarn workspaces foreach -pt run build",
+    "build:parser": "tsx scripts/build-elm-parser.ts",
+    "gen:cst-types": "tsx scripts/gen-cst-types.ts",
+    "test": "yarn workspaces foreach -pt run test",
+    "lint": "eslint . --ext .ts,.tsx",
+    "format": "prettier --write \"**/*.{ts,tsx,json,md}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,json,md}\"",
+    "typecheck": "yarn workspaces foreach -pt run typecheck",
+    "clean": "yarn workspaces foreach -pt run clean && rm -rf node_modules"
+  },
+  "devDependencies": {
+    "@types/node": "24.7.2",
+    "@typescript-eslint/eslint-plugin": "8.46.1",
+    "@typescript-eslint/parser": "8.46.1",
+    "eslint": "9.37.0",
+    "eslint-config-prettier": "10.1.8",
+    "prettier": "3.6.2",
+    "tsx": "4.20.6",
+    "typescript": "5.9.3"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
 }
