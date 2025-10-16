@@ -6,9 +6,9 @@ let
   };
 in
 with (nixpkgs); stdenv.mkDerivation rec {
-  name = "env";
+  name = "elm-to-react-env";
 
-  env = buildEnv {
+  shellEnv = buildEnv {
     name = name;
     paths = buildInputs;
   };
@@ -16,10 +16,9 @@ with (nixpkgs); stdenv.mkDerivation rec {
   buildInputs = [
     niv
     nixpkgs-fmt
-    nodejs_23
+    nodejs_24
     yarn
   ] ++ lib.optionals stdenv.isLinux [
     glibcLocales
-    dvc-with-remotes
   ];
 }
