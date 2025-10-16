@@ -30,80 +30,193 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@effect/cli@npm:^0.49.0":
-  version: 0.49.7
-  resolution: "@effect/cli@npm:0.49.7"
+"@effect/cli@npm:0.71.0":
+  version: 0.71.0
+  resolution: "@effect/cli@npm:0.71.0"
   dependencies:
     ini: "npm:^4.1.3"
     toml: "npm:^3.0.0"
     yaml: "npm:^2.5.0"
   peerDependencies:
-    "@effect/platform": ^0.70.7
-    "@effect/printer": ^0.39.5
-    "@effect/printer-ansi": ^0.39.5
-    effect: ^3.11.5
-  checksum: 10c0/a165c5ce2e264da935e8c1b679476820172de3732f2c80e86509b10827524f7df35f4a813f7b6725c183e38005aa1854cad36f8b4628f6525beec97385baec03
+    "@effect/platform": ^0.92.0
+    "@effect/printer": ^0.46.0
+    "@effect/printer-ansi": ^0.46.0
+    effect: ^3.18.0
+  checksum: 10c0/1bd7f7672a2e8a1f6fd51deabc915d321f4aea3018dbcc38faacea1d4b2df04bb45f5f1a749da0cec9db0b4d1e8773c84fddcf89d272d402a679aec146aa0149
   languageName: node
   linkType: hard
 
-"@effect/eslint-plugin@npm:^0.2.0":
-  version: 0.2.0
-  resolution: "@effect/eslint-plugin@npm:0.2.0"
+"@effect/cluster@npm:0.50.4":
+  version: 0.50.4
+  resolution: "@effect/cluster@npm:0.50.4"
+  peerDependencies:
+    "@effect/platform": ^0.92.1
+    "@effect/rpc": ^0.71.0
+    "@effect/sql": ^0.46.0
+    "@effect/workflow": ^0.11.3
+    effect: ^3.18.4
+  checksum: 10c0/4a630d2b9e11a00a654212d5cb499d23150faf78a6f402c59ca0c2ae9299599e1bd814bdc71688d39e9752b1a83baedbaf5f19686badf751d02f0afb98aa8a75
+  languageName: node
+  linkType: hard
+
+"@effect/eslint-plugin@npm:0.3.2":
+  version: 0.3.2
+  resolution: "@effect/eslint-plugin@npm:0.3.2"
   dependencies:
     "@dprint/formatter": "npm:^0.4.1"
     "@dprint/typescript": "npm:^0.91.3"
     prettier-linter-helpers: "npm:^1.0.0"
-  checksum: 10c0/d66e948dfa7fa17c44cb31b24a17e014ee7eab669064952f686140d82e5ab01e21e2365d19f63a659366613c4b83ed0ec70403e0c74490ba91bcc346d35910da
+  checksum: 10c0/cabb82a087201ed85d7a595736b4728c16f8510112e09164c4bf028825d50425a0aaf3fab0429b9d4d92a45f7135b7a93b77300b1b93784a91ceb54adecf7040
   languageName: node
   linkType: hard
 
-"@effect/platform-node-shared@npm:^0.21.3":
-  version: 0.21.7
-  resolution: "@effect/platform-node-shared@npm:0.21.7"
+"@effect/experimental@npm:0.56.0":
+  version: 0.56.0
+  resolution: "@effect/experimental@npm:0.56.0"
   dependencies:
-    "@parcel/watcher": "npm:^2.4.1"
-    multipasta: "npm:^0.2.5"
+    uuid: "npm:^11.0.3"
   peerDependencies:
-    "@effect/platform": ^0.71.7
-    effect: ^3.11.10
-  checksum: 10c0/eed518de47bafc48c85cf32cf910a083e6a138ca5a9544f81e674c8c91071b8eb97eb2aeb61bb2711cfa4a0acbe6ea6206f3471559b81d9f79a8bd8a5d100c31
+    "@effect/platform": ^0.92.0
+    effect: ^3.18.0
+    ioredis: ^5
+    lmdb: ^3
+  peerDependenciesMeta:
+    ioredis:
+      optional: true
+    lmdb:
+      optional: true
+  checksum: 10c0/0355701bf6bae36947e621649398816de4b07ed5225d8604ce43e0b51da07d65148adb60831fcd03f4baf51f4fd5db22aa4c5651b3a64d6f3b476b32cd15e389
   languageName: node
   linkType: hard
 
-"@effect/platform-node@npm:^0.66.0":
-  version: 0.66.3
-  resolution: "@effect/platform-node@npm:0.66.3"
+"@effect/platform-node-shared@npm:^0.51.3":
+  version: 0.51.5
+  resolution: "@effect/platform-node-shared@npm:0.51.5"
   dependencies:
-    "@effect/platform-node-shared": "npm:^0.21.3"
+    "@parcel/watcher": "npm:^2.5.1"
+    multipasta: "npm:^0.2.7"
+    ws: "npm:^8.18.2"
+  peerDependencies:
+    "@effect/cluster": ^0.50.4
+    "@effect/platform": ^0.92.1
+    "@effect/rpc": ^0.71.0
+    "@effect/sql": ^0.46.0
+    effect: ^3.18.4
+  checksum: 10c0/bea65affd661029ddcbf76dc2ac69e49ea2ff7075967cb01ee67c5dbf2135b9d81acf46f775b9d701a22440cc30d1e0ca4d7ccc345c173dee0097f76d16c2fe0
+  languageName: node
+  linkType: hard
+
+"@effect/platform-node@npm:0.98.3":
+  version: 0.98.3
+  resolution: "@effect/platform-node@npm:0.98.3"
+  dependencies:
+    "@effect/platform-node-shared": "npm:^0.51.3"
     mime: "npm:^3.0.0"
-    undici: "npm:^6.19.7"
-    ws: "npm:^8.18.0"
+    undici: "npm:^7.10.0"
+    ws: "npm:^8.18.2"
   peerDependencies:
-    "@effect/platform": ^0.71.3
-    effect: ^3.11.7
-  checksum: 10c0/9f9d9bf463c1ac2ccefe330a48e015e94e0ce081f76f94ec751de5064ad2960eac125e4dfb905d4acef51f838329f22c4e1a8e7ad95e93dba951834781326bfb
+    "@effect/cluster": ^0.50.3
+    "@effect/platform": ^0.92.1
+    "@effect/rpc": ^0.71.0
+    "@effect/sql": ^0.46.0
+    effect: ^3.18.1
+  checksum: 10c0/19f506e4900ee2f3cc558f80dc45499480780279aed5e8d5eb9f52b5d2db9a23946cdf49cabedc009c6de07c6d67216d15405f8394f2836a79b06199aa521abd
   languageName: node
   linkType: hard
 
-"@effect/platform@npm:^0.73.0":
-  version: 0.73.1
-  resolution: "@effect/platform@npm:0.73.1"
+"@effect/platform@npm:0.92.1":
+  version: 0.92.1
+  resolution: "@effect/platform@npm:0.92.1"
   dependencies:
-    find-my-way-ts: "npm:^0.1.5"
-    multipasta: "npm:^0.2.5"
+    find-my-way-ts: "npm:^0.1.6"
+    msgpackr: "npm:^1.11.4"
+    multipasta: "npm:^0.2.7"
   peerDependencies:
-    effect: ^3.12.4
-  checksum: 10c0/b6f76de5972731104cbb17cab37e0f5c343a87c369a615aaa70dac002b12bac401bbc8c504ab2f7bad2ba097202a072265acc58f24af055b2387031a297ec420
+    effect: ^3.18.1
+  checksum: 10c0/bc2a96704525f5aaaff16edd4d478bade1154192956aa5f86d74ebdcc3a964683ff4ed5bb0c72f998301d8b75ac78e7d21da386f5a6edbb56942279eacd2626d
   languageName: node
   linkType: hard
 
-"@elm-tooling/tree-sitter-elm@npm:5.7.0":
-  version: 5.7.0
-  resolution: "@elm-tooling/tree-sitter-elm@npm:5.7.0"
+"@effect/printer-ansi@npm:0.46.0":
+  version: 0.46.0
+  resolution: "@effect/printer-ansi@npm:0.46.0"
   dependencies:
-    nan: "npm:^2.18.0"
+    "@effect/printer": "npm:^0.46.0"
+  peerDependencies:
+    "@effect/typeclass": ^0.37.0
+    effect: ^3.18.0
+  checksum: 10c0/93460bd118658b45c6334102285b50a484fe3eb799581855328007c9980f6f81d70b330ad895c06386b49e05e5ba435468eb99942f2ad0b229247e2a180537f1
+  languageName: node
+  linkType: hard
+
+"@effect/printer@npm:0.46.0, @effect/printer@npm:^0.46.0":
+  version: 0.46.0
+  resolution: "@effect/printer@npm:0.46.0"
+  peerDependencies:
+    "@effect/typeclass": ^0.37.0
+    effect: ^3.18.0
+  checksum: 10c0/1fdc64f03824e590a7798fdb9794dd33bfbd2b11f39d221a867aaccdbe6e3b47de3965166cfcf1f94d26ee006a31e55a200e4722c521c68040ca64da336de6f9
+  languageName: node
+  linkType: hard
+
+"@effect/rpc@npm:0.71.0":
+  version: 0.71.0
+  resolution: "@effect/rpc@npm:0.71.0"
+  dependencies:
+    msgpackr: "npm:^1.11.4"
+  peerDependencies:
+    "@effect/platform": ^0.92.0
+    effect: ^3.18.0
+  checksum: 10c0/496eaacb3da16a2085f4350053df2dfb176020732036c76da41713bc55d8675407c1249e4168404571288bdba47a510fe43c7b24401963c45ec8ba86154ed1a2
+  languageName: node
+  linkType: hard
+
+"@effect/sql@npm:0.46.0":
+  version: 0.46.0
+  resolution: "@effect/sql@npm:0.46.0"
+  dependencies:
+    uuid: "npm:^11.0.3"
+  peerDependencies:
+    "@effect/experimental": ^0.56.0
+    "@effect/platform": ^0.92.0
+    effect: ^3.18.0
+  checksum: 10c0/a28382d4d35e30ac917f69b2f7a10567a31084c5285b81d007edb3181791e6013d935d211b132e85bea38075b915fe78e040df4eb8d6da22d1d79dda7eaf02b8
+  languageName: node
+  linkType: hard
+
+"@effect/typeclass@npm:0.37.0":
+  version: 0.37.0
+  resolution: "@effect/typeclass@npm:0.37.0"
+  peerDependencies:
+    effect: ^3.18.0
+  checksum: 10c0/5a611e0075754bfbeb33cbadd8a33d834c9277ac26ee2b96e9835311fe2ca8535770f90a8f270a3dd2c6156839a2f0725b391dcfc58e6c517f7e728988fe41dd
+  languageName: node
+  linkType: hard
+
+"@effect/workflow@npm:0.11.3":
+  version: 0.11.3
+  resolution: "@effect/workflow@npm:0.11.3"
+  peerDependencies:
+    "@effect/platform": ^0.92.1
+    "@effect/rpc": ^0.71.0
+    effect: ^3.18.1
+  checksum: 10c0/4d69388fbcb4c63cb7725c0316a23b098432251334ded5c849aec0ec15f959e2a2cd04796369c03e2f729f8ecc7c98d1261d90842bd89d5c799cf5b803d959da
+  languageName: node
+  linkType: hard
+
+"@elm-tooling/tree-sitter-elm@npm:5.8.0":
+  version: 5.8.0
+  resolution: "@elm-tooling/tree-sitter-elm@npm:5.8.0"
+  dependencies:
+    node-addon-api: "npm:^8.2.1"
     node-gyp: "npm:latest"
-  checksum: 10c0/6a5c47981bb14d2deb96380075093044aeb5b08863c9d223d83c15a35d8201eee16df043e11aabd3a0451e7e7f8c7a89c1cff0a83170f15012cb02be33e07040
+    node-gyp-build: "npm:^4.8.2"
+  peerDependencies:
+    tree-sitter: ^0.21.1
+  peerDependenciesMeta:
+    tree-sitter:
+      optional: true
+  checksum: 10c0/d30f2b0e101ec1726a790ba08478b22a4838429180ad74375ce1dd2e92a4ca3cb35efe0822fec1164a71afd4470b358e42593e4efb27f952c108d1b857b5f512
   languageName: node
   linkType: hard
 
@@ -431,6 +544,48 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@msgpackr-extract/msgpackr-extract-darwin-arm64@npm:3.0.3":
+  version: 3.0.3
+  resolution: "@msgpackr-extract/msgpackr-extract-darwin-arm64@npm:3.0.3"
+  conditions: os=darwin & cpu=arm64
+  languageName: node
+  linkType: hard
+
+"@msgpackr-extract/msgpackr-extract-darwin-x64@npm:3.0.3":
+  version: 3.0.3
+  resolution: "@msgpackr-extract/msgpackr-extract-darwin-x64@npm:3.0.3"
+  conditions: os=darwin & cpu=x64
+  languageName: node
+  linkType: hard
+
+"@msgpackr-extract/msgpackr-extract-linux-arm64@npm:3.0.3":
+  version: 3.0.3
+  resolution: "@msgpackr-extract/msgpackr-extract-linux-arm64@npm:3.0.3"
+  conditions: os=linux & cpu=arm64
+  languageName: node
+  linkType: hard
+
+"@msgpackr-extract/msgpackr-extract-linux-arm@npm:3.0.3":
+  version: 3.0.3
+  resolution: "@msgpackr-extract/msgpackr-extract-linux-arm@npm:3.0.3"
+  conditions: os=linux & cpu=arm
+  languageName: node
+  linkType: hard
+
+"@msgpackr-extract/msgpackr-extract-linux-x64@npm:3.0.3":
+  version: 3.0.3
+  resolution: "@msgpackr-extract/msgpackr-extract-linux-x64@npm:3.0.3"
+  conditions: os=linux & cpu=x64
+  languageName: node
+  linkType: hard
+
+"@msgpackr-extract/msgpackr-extract-win32-x64@npm:3.0.3":
+  version: 3.0.3
+  resolution: "@msgpackr-extract/msgpackr-extract-win32-x64@npm:3.0.3"
+  conditions: os=win32 & cpu=x64
+  languageName: node
+  linkType: hard
+
 "@nodelib/fs.scandir@npm:2.1.5":
   version: 2.1.5
   resolution: "@nodelib/fs.scandir@npm:2.1.5"
@@ -571,7 +726,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@parcel/watcher@npm:^2.4.1":
+"@parcel/watcher@npm:^2.5.1":
   version: 2.5.1
   resolution: "@parcel/watcher@npm:2.5.1"
   dependencies:
@@ -1020,6 +1175,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"detect-libc@npm:^2.0.1":
+  version: 2.1.2
+  resolution: "detect-libc@npm:2.1.2"
+  checksum: 10c0/acc675c29a5649fa1fb6e255f993b8ee829e510b6b56b0910666949c80c364738833417d0edb5f90e4e46be17228b0f2b66a010513984e18b15deeeac49369c4
+  languageName: node
+  linkType: hard
+
 "eastasianwidth@npm:^0.2.0":
   version: 0.2.0
   resolution: "eastasianwidth@npm:0.2.0"
@@ -1027,7 +1189,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"effect@npm:^3.11.0":
+"effect@npm:3.18.4":
   version: 3.18.4
   resolution: "effect@npm:3.18.4"
   dependencies:
@@ -1042,20 +1204,28 @@ __metadata:
   resolution: "elm-to-react@workspace:."
   dependencies:
     "@asgerf/dts-tree-sitter": "npm:0.21.0"
-    "@effect/cli": "npm:^0.49.0"
-    "@effect/eslint-plugin": "npm:^0.2.0"
-    "@effect/platform": "npm:^0.73.0"
-    "@effect/platform-node": "npm:^0.66.0"
-    "@elm-tooling/tree-sitter-elm": "npm:5.7.0"
+    "@effect/cli": "npm:0.71.0"
+    "@effect/cluster": "npm:0.50.4"
+    "@effect/eslint-plugin": "npm:0.3.2"
+    "@effect/experimental": "npm:0.56.0"
+    "@effect/platform": "npm:0.92.1"
+    "@effect/platform-node": "npm:0.98.3"
+    "@effect/printer": "npm:0.46.0"
+    "@effect/printer-ansi": "npm:0.46.0"
+    "@effect/rpc": "npm:0.71.0"
+    "@effect/sql": "npm:0.46.0"
+    "@effect/typeclass": "npm:0.37.0"
+    "@effect/workflow": "npm:0.11.3"
+    "@elm-tooling/tree-sitter-elm": "npm:5.8.0"
     "@types/node": "npm:24.7.2"
     "@typescript-eslint/eslint-plugin": "npm:8.46.1"
     "@typescript-eslint/parser": "npm:8.46.1"
-    effect: "npm:^3.11.0"
+    effect: "npm:3.18.4"
     eslint: "npm:9.37.0"
     eslint-config-prettier: "npm:10.1.8"
     prettier: "npm:3.6.2"
-    tree-sitter: "npm:0.21.1"
-    tree-sitter-cli: "npm:0.23.2"
+    tree-sitter: "npm:0.25.0"
+    tree-sitter-cli: "npm:0.25.10"
     tsx: "npm:4.20.6"
     typescript: "npm:5.9.3"
   dependenciesMeta:
@@ -1431,7 +1601,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"find-my-way-ts@npm:^0.1.5":
+"find-my-way-ts@npm:^0.1.6":
   version: 0.1.6
   resolution: "find-my-way-ts@npm:0.1.6"
   checksum: 10c0/16ad4b15275b56ee0ec361d0c61afbdff4c75bd0ac04112f6910f188cb1058096ba63529c2363914da6bb60266aa4def1025af04af26368ff87eb0df52f2862f
@@ -1932,19 +2102,53 @@ __metadata:
   languageName: node
   linkType: hard
 
-"multipasta@npm:^0.2.5":
-  version: 0.2.7
-  resolution: "multipasta@npm:0.2.7"
-  checksum: 10c0/15917ac88aeefa5b8afac44b90d1e9d0d0ec7148b51e0766f07a69a220ecebcb6404539a856c45aa85a3d7fe517bc58febe81437146705f17ecd2961dc0b9fa5
+"msgpackr-extract@npm:^3.0.2":
+  version: 3.0.3
+  resolution: "msgpackr-extract@npm:3.0.3"
+  dependencies:
+    "@msgpackr-extract/msgpackr-extract-darwin-arm64": "npm:3.0.3"
+    "@msgpackr-extract/msgpackr-extract-darwin-x64": "npm:3.0.3"
+    "@msgpackr-extract/msgpackr-extract-linux-arm": "npm:3.0.3"
+    "@msgpackr-extract/msgpackr-extract-linux-arm64": "npm:3.0.3"
+    "@msgpackr-extract/msgpackr-extract-linux-x64": "npm:3.0.3"
+    "@msgpackr-extract/msgpackr-extract-win32-x64": "npm:3.0.3"
+    node-gyp: "npm:latest"
+    node-gyp-build-optional-packages: "npm:5.2.2"
+  dependenciesMeta:
+    "@msgpackr-extract/msgpackr-extract-darwin-arm64":
+      optional: true
+    "@msgpackr-extract/msgpackr-extract-darwin-x64":
+      optional: true
+    "@msgpackr-extract/msgpackr-extract-linux-arm":
+      optional: true
+    "@msgpackr-extract/msgpackr-extract-linux-arm64":
+      optional: true
+    "@msgpackr-extract/msgpackr-extract-linux-x64":
+      optional: true
+    "@msgpackr-extract/msgpackr-extract-win32-x64":
+      optional: true
+  bin:
+    download-msgpackr-prebuilds: bin/download-prebuilds.js
+  checksum: 10c0/e504fd8bf86a29d7527c83776530ee6dc92dcb0273bb3679fd4a85173efead7f0ee32fb82c8410a13c33ef32828c45f81118ffc0fbed5d6842e72299894623b4
   languageName: node
   linkType: hard
 
-"nan@npm:^2.18.0":
-  version: 2.23.0
-  resolution: "nan@npm:2.23.0"
+"msgpackr@npm:^1.11.4":
+  version: 1.11.5
+  resolution: "msgpackr@npm:1.11.5"
   dependencies:
-    node-gyp: "npm:latest"
-  checksum: 10c0/b986dd257dca53ab43a3b6ca6d0eafde697b69e1d63b242fa4aece50ce97eb169f9c4a5d8eb0eb5f58d118a9595fee11f3198fa210f023440053bb6f54109e73
+    msgpackr-extract: "npm:^3.0.2"
+  dependenciesMeta:
+    msgpackr-extract:
+      optional: true
+  checksum: 10c0/f35ffd218661e8afc52490cde3dbf2656304e7940563c5313aa2f45e31ac5bdce3b58f27e55b785c700085ee76f26fc7afbae25ae5abe05068a8f000fd0ac6cd
+  languageName: node
+  linkType: hard
+
+"multipasta@npm:^0.2.7":
+  version: 0.2.7
+  resolution: "multipasta@npm:0.2.7"
+  checksum: 10c0/15917ac88aeefa5b8afac44b90d1e9d0d0ec7148b51e0766f07a69a220ecebcb6404539a856c45aa85a3d7fe517bc58febe81437146705f17ecd2961dc0b9fa5
   languageName: node
   linkType: hard
 
@@ -1971,7 +2175,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"node-addon-api@npm:^8.0.0":
+"node-addon-api@npm:^8.0.0, node-addon-api@npm:^8.2.1, node-addon-api@npm:^8.3.0":
   version: 8.5.0
   resolution: "node-addon-api@npm:8.5.0"
   dependencies:
@@ -1980,7 +2184,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"node-gyp-build@npm:^4.8.0":
+"node-gyp-build-optional-packages@npm:5.2.2":
+  version: 5.2.2
+  resolution: "node-gyp-build-optional-packages@npm:5.2.2"
+  dependencies:
+    detect-libc: "npm:^2.0.1"
+  bin:
+    node-gyp-build-optional-packages: bin.js
+    node-gyp-build-optional-packages-optional: optional.js
+    node-gyp-build-optional-packages-test: build-test.js
+  checksum: 10c0/c81128c6f91873381be178c5eddcbdf66a148a6a89a427ce2bcd457593ce69baf2a8662b6d22cac092d24aa9c43c230dec4e69b3a0da604503f4777cd77e282b
+  languageName: node
+  linkType: hard
+
+"node-gyp-build@npm:^4.8.0, node-gyp-build@npm:^4.8.2, node-gyp-build@npm:^4.8.4":
   version: 4.8.4
   resolution: "node-gyp-build@npm:4.8.4"
   bin:
@@ -2386,16 +2603,27 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tree-sitter-cli@npm:0.23.2":
-  version: 0.23.2
-  resolution: "tree-sitter-cli@npm:0.23.2"
+"tree-sitter-cli@npm:0.25.10":
+  version: 0.25.10
+  resolution: "tree-sitter-cli@npm:0.25.10"
   bin:
     tree-sitter: cli.js
-  checksum: 10c0/26bc30b881992efd07c6da36d07de37594f16e5388ea38d3b6e59df5b3ba62620d60e5a19a9f9f3c95d0627edd52dda1a6134328e8d01235923aebed7bb389cf
+  checksum: 10c0/45a27f8b41addc1849a09c5f46017aead69c25656db75fea1fc99918a03dff1fbdb159c80b29f30009066772c8b417595fcb0964f3e2aa376d1952070ad16ca8
   languageName: node
   linkType: hard
 
-"tree-sitter@npm:0.21.1, tree-sitter@npm:^0.21.1":
+"tree-sitter@npm:0.25.0":
+  version: 0.25.0
+  resolution: "tree-sitter@npm:0.25.0"
+  dependencies:
+    node-addon-api: "npm:^8.3.0"
+    node-gyp: "npm:latest"
+    node-gyp-build: "npm:^4.8.4"
+  checksum: 10c0/ba994a4be081863e29f90e25658a8b63870193555245edbd3366cc5a4a2400492eea1e41dffaac961648f137274efb3ddb16f05c2896ce049749f0397e0319f4
+  languageName: node
+  linkType: hard
+
+"tree-sitter@npm:^0.21.1":
   version: 0.21.1
   resolution: "tree-sitter@npm:0.21.1"
   dependencies:
@@ -2467,10 +2695,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"undici@npm:^6.19.7":
-  version: 6.22.0
-  resolution: "undici@npm:6.22.0"
-  checksum: 10c0/47903c489d73e26bd47960cf2f04d63282ed050818b672cb05f8dfb6403381b850cf1b1751832654fd3af22aacd9d780e5e61aff563cd97943f5c4f10d5b3e23
+"undici@npm:^7.10.0":
+  version: 7.16.0
+  resolution: "undici@npm:7.16.0"
+  checksum: 10c0/efd867792e9f233facf9efa0a087e2d9c3e4415c0b234061b9b40307ca4fa01d945fee4d43c7b564e1b80e0d519bcc682f9f6e0de13c717146c00a80e2f1fb0f
   languageName: node
   linkType: hard
 
@@ -2498,6 +2726,15 @@ __metadata:
   dependencies:
     punycode: "npm:^2.1.0"
   checksum: 10c0/4ef57b45aa820d7ac6496e9208559986c665e49447cb072744c13b66925a362d96dd5a46c4530a6b8e203e5db5fe849369444440cb22ecfc26c679359e5dfa3c
+  languageName: node
+  linkType: hard
+
+"uuid@npm:^11.0.3":
+  version: 11.1.0
+  resolution: "uuid@npm:11.1.0"
+  bin:
+    uuid: dist/esm/bin/uuid
+  checksum: 10c0/34aa51b9874ae398c2b799c88a127701408cd581ee89ec3baa53509dd8728cbb25826f2a038f9465f8b7be446f0fbf11558862965b18d21c993684297628d4d3
   languageName: node
   linkType: hard
 
@@ -2552,7 +2789,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ws@npm:^8.18.0":
+"ws@npm:^8.18.2":
   version: 8.18.3
   resolution: "ws@npm:8.18.3"
   peerDependencies:
