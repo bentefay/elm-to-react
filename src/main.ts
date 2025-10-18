@@ -46,6 +46,4 @@ const run = Command.run(cli, {
   version: "0.1.0",
 });
 
-NodeRuntime.runMain(
-  run(process.argv.slice(2)).pipe(Effect.provide(NodeContext.layer))
-);
+run(process.argv).pipe(Effect.provide(NodeContext.layer), NodeRuntime.runMain);

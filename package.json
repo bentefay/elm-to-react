@@ -13,7 +13,7 @@
   "bin": "./dist/main.js",
   "packageManager": "yarn@4.10.3",
   "scripts": {
-    "dev": "tsx src/main.ts",
+    "dev": "node --experimental-strip-types src/main.ts",
     "build": "tsc",
     "typecheck": "tsc --noEmit",
     "lint": "eslint . --ext .ts,.tsx",
@@ -46,7 +46,6 @@
     "prettier": "3.6.2",
     "tree-sitter": "0.25.0",
     "tree-sitter-cli": "0.25.10",
-    "tsx": "4.20.6",
     "typescript": "5.9.3"
   },
   "engines": {
