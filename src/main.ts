@@ -3,41 +3,40 @@
 import { Command, Options } from "@effect/cli";
 import { NodeContext, NodeRuntime } from "@effect/platform-node";
 import { Console, Effect } from "effect";
+import { createParser } from "./parser/index.ts";
 
 const cli = Command.make("transpile", {
   entry: Options.file("entry").pipe(
     Options.withDescription("Entry point Elm file(s) to transpile")
   ),
-  elmProject: Options.file("elm-project").pipe(
-    Options.withDefault("./elm.json"),
-    Options.withDescription("Path to elm.json")
-  ),
-  outDir: Options.directory("out").pipe(
-    Options.withDefault("./gen"),
-    Options.withDescription("Output directory for generated TypeScript")
-  ),
 })
   .pipe(
-    Command.withHandler(({ entry, elmProject, outDir }) =>
+    Command.withDescription(
+      "A source-to-source transpiler from Elm to TypeScript/React"
+    )
+  )
+  .pipe(
+    Command.withHandler(({ entry }) =>
       Effect.gen(function* () {
         yield* Console.log("🌳 elm-to-react transpiler");
         yield* Console.log("");
         yield* Console.log(`Entry: ${entry}`);
-        yield* Console.log(`Elm project: ${elmProject}`);
-        yield* Console.log(`Output directory: ${outDir}`);
         yield* Console.log("");
-        yield* Console.log("⚠️  Transpilation not yet implemented");
 
-        // TODO: Implement transpilation
-        // 1. Parse entry file with tree-sitter
-        // 2. Walk CST and emit TypeScript
-        // 3. Write to output directory
+        const parser = createParser();
+
+        yield* Effect.tryPromise({
+          try: async () => {
+            const tree = await parser.parseFile(entry);
+            console.log("✅ Successfully parsed Elm file!");
+            console.log("");
+            console.log("AST preview:");
+            console.log(parser.printTree(tree));
+            return tree;
+          },
+          catch: error => new Error(`Failed to parse Elm file: ${error}`),
+        });
       })
-    )
-  )
-  .pipe(
-    Command.withDescription(
-      "A source-to-source transpiler from Elm to TypeScript/React"
     )
   );
 

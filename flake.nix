@@ -18,7 +18,9 @@
             yarn
           ];
 
-          shellHook = '''';
+          shellHook = ''
+            alias elm-to-react='node --experimental-strip-types src/main.ts'
+          '';
         };
       });
 }
