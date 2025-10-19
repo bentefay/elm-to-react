@@ -6,6 +6,7 @@ import type { ElmSyntax } from "../parser/index.js";
 
 export class TypeScriptEmitter {
   emit(root: ElmSyntax.FileNode, source: string): string {
+    console.log("TypeScriptEmitter.emit called");
     const lines: string[] = [];
 
     // Extract the exposing list from module declaration
@@ -352,18 +353,7 @@ export class TypeScriptEmitter {
         ? `: ${this.convertElmTypeToTS(elmType)}`
         : "";
 
-      // Simple heuristic: if it's a record expression, convert `=` to `:`
-      if (bodyNode.type === "record_expr") {
-        const body = source
-          .substring(bodyNode.startIndex, bodyNode.endIndex)
-          .trim()
-          .replace(/(\w+)\s*=\s*/g, "$1: ");
-        return [
-          `// value ${name}`,
-          `${exportKeyword}const ${name}${typeAnnotation} = ${body};`,
-        ].join("\n");
-      }
-      // If it's a function call or other expression, convert it
+      // Emit the body using emitExpression for proper handling of all expression types
       const body = this.emitExpression(bodyNode, source);
       return [
         `// value ${name}`,
@@ -535,9 +525,29 @@ export class TypeScriptEmitter {
       return `{ ...${base}, ${fields.join(", ")} }`;
     }
 
-    // Simple record - convert `field = value` to `field: value`
-    const text = source.substring(node.startIndex, node.endIndex);
-    return text.replace(/(\w+)\s*=\s*/g, "$1: ");
+    // Simple record - properly emit each field value
+    const fields = node.namedChildren
+      .filter(child => child.type === "field")
+      .map(field => {
+        const fieldName = field.namedChildren.find(
+          child => child.type === "lower_case_identifier"
+        );
+        const value = field.namedChildren.find(
+          child => child.type !== "lower_case_identifier" && child.type !== "eq"
+        );
+        if (fieldName && value) {
+          const name = source.substring(
+            fieldName.startIndex,
+            fieldName.endIndex
+          );
+          const val = this.emitExpression(value, source);
+          return `${name}: ${val}`;
+        }
+        return "";
+      })
+      .filter(Boolean);
+
+    return `{ ${fields.join(", ")} }`;
   }
 
   private emitCaseExpression(
@@ -636,12 +646,49 @@ export class TypeScriptEmitter {
     node: ElmSyntax.SyntaxNode,
     source: string
   ): string {
-    // value_qid contains the identifier(s)
+    // value_qid contains the identifier(s) - can be upper_case_qid or lower_case_identifier
     const qid = node.namedChildren.find(child => child.type === "value_qid");
-    if (qid) {
-      return source.substring(qid.startIndex, qid.endIndex);
+    if (!qid) {
+      return source.substring(node.startIndex, node.endIndex);
     }
-    return source.substring(node.startIndex, node.endIndex);
+
+    const text = source.substring(qid.startIndex, qid.endIndex);
+
+    // Check if it contains an upper_case_qid (sum type constructor)
+    const upperCaseQid = qid.namedChildren.find(
+      child => child.type === "upper_case_qid"
+    );
+
+    if (upperCaseQid) {
+      // Get the actual identifier from upper_case_qid
+      const upperCaseIdentifier = upperCaseQid.namedChildren.find(
+        child => child.type === "upper_case_identifier"
+      );
+
+      if (upperCaseIdentifier) {
+        const constructorName = source.substring(
+          upperCaseIdentifier.startIndex,
+          upperCaseIdentifier.endIndex
+        );
+
+        console.log(`Found constructor: ${constructorName}`);
+
+        // Special case for Bool constructors
+        if (constructorName === "True") {
+          return "true";
+        }
+        if (constructorName === "False") {
+          return "false";
+        }
+
+        // Other sum type constructors - convert to array syntax
+        // TODO: Handle constructors with parameters
+        return `["${constructorName}"]`;
+      }
+    }
+
+    // It's a regular value (lowercase identifier)
+    return text;
   }
 
   private emitFieldAccess(node: ElmSyntax.SyntaxNode, source: string): string {
