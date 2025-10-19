@@ -326,6 +326,7 @@ elm-to-react --entry <file> [--output <file>] [--debug]
 - `--debug`: Show detailed AST debug output (optional)
 
 **Examples in `examples/` folder:**
+
 - `examples/Simple.elm` - A basic counter with TEA pattern
 - `examples/Simple.ts` - Generated TypeScript output (self-documenting)
 
@@ -336,73 +337,94 @@ elm-to-react --entry <file> [--output <file>] [--debug]
 The transpiler currently supports:
 
 ✅ **Type Declarations** - Sum types with array tuple syntax
+
 ```elm
 type Msg = Increment | Decrement
 ```
+
 ↓
+
 ```typescript
 export type Msg = ["Increment"] | ["Decrement"];
 ```
 
 ✅ **Type Aliases** - Records with Elm to TS type conversion
+
 ```elm
 type alias Model = { count : Int }
 ```
+
 ↓
+
 ```typescript
-export type Model = { count : number };
+export type Model = { count: number };
 ```
 
 ✅ **Functions** - Arrow functions with parameters
+
 ```elm
 update : Msg -> Model -> Model
 update msg model = ...
 ```
+
 ↓
+
 ```typescript
 export const update = (msg, model) => ...;
 ```
 
 ✅ **Case Expressions** - Pattern matching on sum types
+
 ```elm
 case msg of
     Increment -> { model | count = model.count + 1 }
     Decrement -> { model | count = model.count - 1 }
 ```
+
 ↓
+
 ```typescript
 (() => {
-    if (msg[0] === "Increment") return { ...model, count: model.count + 1 };
-    if (msg[0] === "Decrement") return { ...model, count: model.count - 1 };
-    throw new Error("Non-exhaustive pattern match");
-})()
+  if (msg[0] === "Increment") return { ...model, count: model.count + 1 };
+  if (msg[0] === "Decrement") return { ...model, count: model.count - 1 };
+  throw new Error("Non-exhaustive pattern match");
+})();
 ```
 
 ✅ **Record Updates** - Spread syntax
+
 ```elm
 { model | count = model.count + 1 }
 ```
+
 ↓
+
 ```typescript
 { ...model, count: model.count + 1 }
 ```
 
 ✅ **Operators** - String concatenation, arithmetic, field access
+
 ```elm
 "Count: " ++ String.fromInt model.count
 ```
+
 ↓
+
 ```typescript
-"Count: " + String.fromInt(model.count)
+"Count: " + String.fromInt(model.count);
 ```
 
 ✅ **Function Calls** - Elm application to TS call syntax
+
 ```elm
 Html.div [] [ Html.text "hello" ]
 ```
+
 ↓
+
 ```typescript
-Html.div([], [Html.text("hello")])
+Html.div([], [Html.text("hello")]);
 ```
 
 ---

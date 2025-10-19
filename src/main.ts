@@ -61,10 +61,22 @@ const cli = Command.make("transpile", {
           ? output.value
           : entry.replace(/\.elm$/, ".ts");
 
+        // Format with Prettier using project config
+        const prettier = yield* Effect.promise(() => import("prettier"));
+        const prettierConfig = yield* Effect.promise(() =>
+          prettier.resolveConfig(outputPath)
+        );
+        const formatted = yield* Effect.promise(() =>
+          prettier.format(typescript, {
+            ...prettierConfig,
+            parser: "typescript",
+          })
+        );
+
         // Write to file
         yield* Effect.promise(() =>
           import("node:fs/promises").then(fs =>
-            fs.writeFile(outputPath, typescript, "utf-8")
+            fs.writeFile(outputPath, formatted, "utf-8")
           )
         );
 
@@ -72,7 +84,7 @@ const cli = Command.make("transpile", {
 
         yield* Console.log("📄 Generated TypeScript:");
         yield* Console.log("─".repeat(80));
-        yield* Console.log(typescript);
+        yield* Console.log(formatted);
         yield* Console.log("─".repeat(80));
       })
     )
