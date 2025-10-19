@@ -2,13 +2,19 @@
 
 import { Command, Options } from "@effect/cli";
 import { NodeContext, NodeRuntime } from "@effect/platform-node";
-import { Console, Effect } from "effect";
+import { Console, Effect, Option } from "effect";
 import { createParser } from "./parser/index.ts";
 import { createEmitter } from "./emitter/index.ts";
 
 const cli = Command.make("transpile", {
   entry: Options.file("entry").pipe(
     Options.withDescription("Entry point Elm file(s) to transpile")
+  ),
+  output: Options.file("output").pipe(
+    Options.withDescription(
+      "Output file path (defaults to <entry-file>.ts next to the source)"
+    ),
+    Options.optional
   ),
   debug: Options.boolean("debug").pipe(
     Options.withDescription("Show detailed AST debug output"),
@@ -21,7 +27,7 @@ const cli = Command.make("transpile", {
     )
   )
   .pipe(
-    Command.withHandler(({ entry, debug }) =>
+    Command.withHandler(({ entry, output, debug }) =>
       Effect.gen(function* () {
         yield* Console.log("🌳 elm-to-react transpiler\n");
         yield* Console.log(`Entry: ${entry}\n`);
@@ -49,6 +55,20 @@ const cli = Command.make("transpile", {
         // Generate TypeScript
         const emitter = createEmitter();
         const typescript = emitter.emit(root, source);
+
+        // Determine output path - unwrap Option type from Effect
+        const outputPath = Option.isSome(output)
+          ? output.value
+          : entry.replace(/\.elm$/, ".ts");
+
+        // Write to file
+        yield* Effect.promise(() =>
+          import("node:fs/promises").then(fs =>
+            fs.writeFile(outputPath, typescript, "utf-8")
+          )
+        );
+
+        yield* Console.log(`✅ Wrote TypeScript to: ${outputPath}\n`);
 
         yield* Console.log("📄 Generated TypeScript:");
         yield* Console.log("─".repeat(80));

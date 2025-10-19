@@ -287,12 +287,14 @@ yarn install
 # Generate TypeScript definitions for Elm CST
 yarn gen:cst-types
 
-# The elm-to-react command is now available
-# Parse an Elm file and print the AST
+# Transpile an Elm file (outputs .ts file next to source by default)
 elm-to-react --entry examples/Simple.elm
 
-# Or with absolute path
-elm-to-react --entry /home/ben/Code/elm-to-react/examples/Simple.elm
+# Transpile with custom output path
+elm-to-react --entry examples/Simple.elm --output dist/Simple.ts
+
+# View detailed AST debug output
+elm-to-react --entry examples/Simple.elm --debug
 ```
 
 ### Without Nix
@@ -306,6 +308,101 @@ yarn gen:cst-types
 
 # Run the CLI in development mode
 yarn dev --entry examples/Simple.elm
+
+# With custom output
+yarn dev --entry examples/Simple.elm --output dist/Simple.ts
+```
+
+---
+
+## CLI Options
+
+```bash
+elm-to-react --entry <file> [--output <file>] [--debug]
+```
+
+- `--entry <file>`: Entry point Elm file to transpile (required)
+- `--output <file>`: Output TypeScript file path (optional, defaults to `<entry>.ts`)
+- `--debug`: Show detailed AST debug output (optional)
+
+**Examples in `examples/` folder:**
+- `examples/Simple.elm` - A basic counter with TEA pattern
+- `examples/Simple.ts` - Generated TypeScript output (self-documenting)
+
+---
+
+## Current Status
+
+The transpiler currently supports:
+
+✅ **Type Declarations** - Sum types with array tuple syntax
+```elm
+type Msg = Increment | Decrement
+```
+↓
+```typescript
+export type Msg = ["Increment"] | ["Decrement"];
+```
+
+✅ **Type Aliases** - Records with Elm to TS type conversion
+```elm
+type alias Model = { count : Int }
+```
+↓
+```typescript
+export type Model = { count : number };
+```
+
+✅ **Functions** - Arrow functions with parameters
+```elm
+update : Msg -> Model -> Model
+update msg model = ...
+```
+↓
+```typescript
+export const update = (msg, model) => ...;
+```
+
+✅ **Case Expressions** - Pattern matching on sum types
+```elm
+case msg of
+    Increment -> { model | count = model.count + 1 }
+    Decrement -> { model | count = model.count - 1 }
+```
+↓
+```typescript
+(() => {
+    if (msg[0] === "Increment") return { ...model, count: model.count + 1 };
+    if (msg[0] === "Decrement") return { ...model, count: model.count - 1 };
+    throw new Error("Non-exhaustive pattern match");
+})()
+```
+
+✅ **Record Updates** - Spread syntax
+```elm
+{ model | count = model.count + 1 }
+```
+↓
+```typescript
+{ ...model, count: model.count + 1 }
+```
+
+✅ **Operators** - String concatenation, arithmetic, field access
+```elm
+"Count: " ++ String.fromInt model.count
+```
+↓
+```typescript
+"Count: " + String.fromInt(model.count)
+```
+
+✅ **Function Calls** - Elm application to TS call syntax
+```elm
+Html.div [] [ Html.text "hello" ]
+```
+↓
+```typescript
+Html.div([], [Html.text("hello")])
 ```
 
 ---
