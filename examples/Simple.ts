@@ -9,10 +9,10 @@ type Msg = ["Increment"] | ["Decrement"];
 type Model = { count: number };
 
 // value init
-const init = { count: 0 };
+const init: Model = { count: 0 };
 
 // function update
-const update = (msg, model) =>
+const update = (msg: Msg, model: Model): Model =>
   (() => {
     if (msg[0] === "Increment") return { ...model, count: model.count + 1 };
     if (msg[0] === "Decrement") return { ...model, count: model.count - 1 };
@@ -20,8 +20,8 @@ const update = (msg, model) =>
   })();
 
 // function view
-const view = model =>
+const view = (model: Model): JSX.Element =>
   Html.div([], [Html.text("Count: " + String.fromInt(model.count))]);
 
 // value main
-export const main = view(init);
+export const main: JSX.Element = view(init);

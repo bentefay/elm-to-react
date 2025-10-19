@@ -7,10 +7,10 @@ export type Status = ["Active"] | ["Inactive"];
 export type User = { name: string; status: Status };
 
 // value defaultUser
-export const defaultUser = { name: "Anonymous", status: Inactive };
+export const defaultUser: User = { name: "Anonymous", status: Inactive };
 
 // function isActive
-export const isActive = user =>
+export const isActive = (user: User): boolean =>
   (() => {
     if (user.status[0] === "Active") return True;
     if (user.status[0] === "Inactive") return False;

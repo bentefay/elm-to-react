@@ -13,6 +13,9 @@ export class TypeScriptEmitter {
       ? this.getExposedNames(root.moduleDeclarationNode, source)
       : new Set<string>();
 
+    // Collect type annotations (they appear as siblings before value declarations)
+    const typeAnnotations = this.collectTypeAnnotations(root, source);
+
     if (root.moduleDeclarationNode) {
       const moduleName = this.getModuleName(root.moduleDeclarationNode, source);
       lines.push(`// Generated from Elm module: ${moduleName}`);
@@ -26,7 +29,12 @@ export class TypeScriptEmitter {
     }
 
     for (const child of root.namedChildren) {
-      const emitted = this.emitTopLevelDeclaration(child, source, exposedNames);
+      const emitted = this.emitTopLevelDeclaration(
+        child,
+        source,
+        exposedNames,
+        typeAnnotations
+      );
       if (emitted) {
         lines.push(emitted);
         lines.push("");
@@ -110,6 +118,37 @@ export class TypeScriptEmitter {
     return exposedNames;
   }
 
+  private collectTypeAnnotations(
+    root: ElmSyntax.FileNode,
+    source: string
+  ): Map<string, string> {
+    const annotations = new Map<string, string>();
+
+    for (const child of root.namedChildren) {
+      if (child.type === "type_annotation") {
+        // Get the name (lower_case_identifier)
+        const nameNode = child.namedChildren.find(
+          n => n.type === "lower_case_identifier"
+        );
+        // Get the type expression (after the colon)
+        const typeExpr = child.namedChildren.find(
+          n => n.type === "type_expression"
+        );
+
+        if (nameNode && typeExpr) {
+          const name = source.substring(nameNode.startIndex, nameNode.endIndex);
+          const typeText = source.substring(
+            typeExpr.startIndex,
+            typeExpr.endIndex
+          );
+          annotations.set(name, typeText);
+        }
+      }
+    }
+
+    return annotations;
+  }
+
   private emitImports(root: ElmSyntax.FileNode, source: string): string {
     const imports: string[] = [];
     for (const child of root.namedChildren) {
@@ -124,7 +163,8 @@ export class TypeScriptEmitter {
   private emitTopLevelDeclaration(
     node: ElmSyntax.SyntaxNode,
     source: string,
-    exposedNames: Set<string>
+    exposedNames: Set<string>,
+    typeAnnotations: Map<string, string>
   ): string | null {
     switch (node.type) {
       case "type_declaration":
@@ -132,7 +172,15 @@ export class TypeScriptEmitter {
       case "type_alias_declaration":
         return this.emitTypeAliasDeclaration(node, source, exposedNames);
       case "value_declaration":
-        return this.emitValueDeclaration(node, source, exposedNames);
+        return this.emitValueDeclaration(
+          node,
+          source,
+          exposedNames,
+          typeAnnotations
+        );
+      case "type_annotation":
+        // Skip type annotations - they're already collected
+        return null;
       default:
         return null;
     }
@@ -245,7 +293,8 @@ export class TypeScriptEmitter {
   private emitValueDeclaration(
     node: ElmSyntax.SyntaxNode,
     source: string,
-    exposedNames: Set<string>
+    exposedNames: Set<string>,
+    typeAnnotations: Map<string, string>
   ): string {
     // Find the function_declaration_left (has the name and parameters)
     const leftNode = node.namedChildren.find(
@@ -271,6 +320,9 @@ export class TypeScriptEmitter {
     const shouldExport = exposedNames.has("*") || exposedNames.has(name);
     const exportKeyword = shouldExport ? "export " : "";
 
+    // Get type annotation if it exists
+    const elmType = typeAnnotations.get(name);
+
     // Check if there are parameters (patterns after the name)
     const paramPatterns = leftNode.namedChildren.filter(
       child => child.type === "pattern" || child.type.includes("pattern")
@@ -285,14 +337,21 @@ export class TypeScriptEmitter {
     );
 
     if (!bodyNode) {
+      const typeAnnotation = elmType
+        ? `: ${this.convertElmTypeToTS(elmType)}`
+        : "";
       return [
         `// value ${name} (no body found)`,
-        `${exportKeyword}const ${name} = null as any;`,
+        `${exportKeyword}const ${name}${typeAnnotation} = null as any;`,
       ].join("\n");
     }
 
     // If it's a simple value (no params), try to convert simple cases
     if (paramPatterns.length === 0) {
+      const typeAnnotation = elmType
+        ? `: ${this.convertElmTypeToTS(elmType)}`
+        : "";
+
       // Simple heuristic: if it's a record expression, convert `=` to `:`
       if (bodyNode.type === "record_expr") {
         const body = source
@@ -301,18 +360,44 @@ export class TypeScriptEmitter {
           .replace(/(\w+)\s*=\s*/g, "$1: ");
         return [
           `// value ${name}`,
-          `${exportKeyword}const ${name} = ${body};`,
+          `${exportKeyword}const ${name}${typeAnnotation} = ${body};`,
         ].join("\n");
       }
       // If it's a function call or other expression, convert it
       const body = this.emitExpression(bodyNode, source);
       return [
         `// value ${name}`,
-        `${exportKeyword}const ${name} = ${body};`,
+        `${exportKeyword}const ${name}${typeAnnotation} = ${body};`,
       ].join("\n");
     }
 
-    // It's a function with parameters - generate arrow function
+    // It's a function with parameters - parse the function type
+    if (elmType) {
+      const { paramTypes, returnType } = this.parseFunctionType(elmType);
+
+      // Annotate parameters with their types
+      const params = paramPatterns
+        .map((pattern, i) => {
+          const paramName = this.emitPattern(pattern, source);
+          const paramType = paramTypes[i]
+            ? `: ${this.convertElmTypeToTS(paramTypes[i])}`
+            : "";
+          return `${paramName}${paramType}`;
+        })
+        .join(", ");
+
+      const body = this.emitExpression(bodyNode, source);
+      const returnAnnotation = returnType
+        ? `: ${this.convertElmTypeToTS(returnType)}`
+        : "";
+
+      return [
+        `// function ${name}`,
+        `${exportKeyword}const ${name} = (${params})${returnAnnotation} => ${body};`,
+      ].join("\n");
+    }
+
+    // No type annotation - generate without types
     const params = paramPatterns
       .map(pattern => this.emitPattern(pattern, source))
       .join(", ");
@@ -322,6 +407,25 @@ export class TypeScriptEmitter {
       `// function ${name}`,
       `${exportKeyword}const ${name} = (${params}) => ${body};`,
     ].join("\n");
+  }
+
+  private parseFunctionType(elmType: string): {
+    paramTypes: string[];
+    returnType: string;
+  } {
+    // Parse Elm function type: A -> B -> C
+    // Last type is return type, rest are parameters
+    const parts = elmType.split("->").map(s => s.trim());
+
+    if (parts.length === 1) {
+      // Not a function, just a value type
+      return { paramTypes: [], returnType: parts[0] };
+    }
+
+    const returnType = parts[parts.length - 1];
+    const paramTypes = parts.slice(0, -1);
+
+    return { paramTypes, returnType };
   }
 
   private emitPattern(node: ElmSyntax.SyntaxNode, source: string): string {
