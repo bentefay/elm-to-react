@@ -8,6 +8,11 @@ export class TypeScriptEmitter {
   emit(root: ElmSyntax.FileNode, source: string): string {
     const lines: string[] = [];
 
+    // Extract the exposing list from module declaration
+    const exposedNames = root.moduleDeclarationNode
+      ? this.getExposedNames(root.moduleDeclarationNode, source)
+      : new Set<string>();
+
     if (root.moduleDeclarationNode) {
       const moduleName = this.getModuleName(root.moduleDeclarationNode, source);
       lines.push(`// Generated from Elm module: ${moduleName}`);
@@ -21,7 +26,7 @@ export class TypeScriptEmitter {
     }
 
     for (const child of root.namedChildren) {
-      const emitted = this.emitTopLevelDeclaration(child, source);
+      const emitted = this.emitTopLevelDeclaration(child, source, exposedNames);
       if (emitted) {
         lines.push(emitted);
         lines.push("");
@@ -42,6 +47,69 @@ export class TypeScriptEmitter {
     return "Unknown";
   }
 
+  private getExposedNames(
+    moduleDecl: ElmSyntax.ModuleDeclarationNode,
+    source: string
+  ): Set<string> {
+    const exposedNames = new Set<string>();
+
+    // Find the exposing_list node
+    const exposingList = moduleDecl.namedChildren.find(
+      child => child.type === "exposing_list"
+    );
+
+    if (!exposingList) {
+      return exposedNames;
+    }
+
+    // Check if it's exposing all (..)
+    const hasDoubleDotsExpose = exposingList.namedChildren.some(
+      child => child.type === "double_dot"
+    );
+
+    if (hasDoubleDotsExpose) {
+      // exposing (..) means export everything
+      return new Set(["*"]);
+    }
+
+    // Otherwise, collect specific exposed items
+    for (const child of exposingList.namedChildren) {
+      if (child.type === "exposed_value") {
+        // exposed_value contains a lower_case_identifier
+        const identifier = child.namedChildren.find(
+          n => n.type === "lower_case_identifier"
+        );
+        if (identifier) {
+          exposedNames.add(
+            source.substring(identifier.startIndex, identifier.endIndex)
+          );
+        }
+      } else if (child.type === "exposed_type") {
+        // exposed_type contains an upper_case_identifier and optionally (..)
+        const identifier = child.namedChildren.find(
+          n => n.type === "upper_case_identifier"
+        );
+        if (identifier) {
+          const typeName = source.substring(
+            identifier.startIndex,
+            identifier.endIndex
+          );
+          exposedNames.add(typeName);
+
+          // Check if it's exposing constructors Type(..)
+          const hasDoubleDot = child.namedChildren.some(
+            n => n.type === "double_dot"
+          );
+          if (hasDoubleDot) {
+            exposedNames.add(`${typeName}:constructors`);
+          }
+        }
+      }
+    }
+
+    return exposedNames;
+  }
+
   private emitImports(root: ElmSyntax.FileNode, source: string): string {
     const imports: string[] = [];
     for (const child of root.namedChildren) {
@@ -55,15 +123,16 @@ export class TypeScriptEmitter {
 
   private emitTopLevelDeclaration(
     node: ElmSyntax.SyntaxNode,
-    source: string
+    source: string,
+    exposedNames: Set<string>
   ): string | null {
     switch (node.type) {
       case "type_declaration":
-        return this.emitTypeDeclaration(node, source);
+        return this.emitTypeDeclaration(node, source, exposedNames);
       case "type_alias_declaration":
-        return this.emitTypeAliasDeclaration(node, source);
+        return this.emitTypeAliasDeclaration(node, source, exposedNames);
       case "value_declaration":
-        return this.emitValueDeclaration(node, source);
+        return this.emitValueDeclaration(node, source, exposedNames);
       default:
         return null;
     }
@@ -71,7 +140,8 @@ export class TypeScriptEmitter {
 
   private emitTypeDeclaration(
     node: ElmSyntax.SyntaxNode,
-    source: string
+    source: string,
+    exposedNames: Set<string>
   ): string {
     // Find the type name (upper_case_identifier)
     const nameNode = node.namedChildren.find(
@@ -81,6 +151,10 @@ export class TypeScriptEmitter {
       ? source.substring(nameNode.startIndex, nameNode.endIndex)
       : "Unknown";
 
+    // Check if this type should be exported
+    const shouldExport = exposedNames.has("*") || exposedNames.has(typeName);
+    const exportKeyword = shouldExport ? "export " : "";
+
     // Find union variants
     const unionVariants = node.namedChildren.filter(
       child => child.type === "union_variant"
@@ -89,7 +163,7 @@ export class TypeScriptEmitter {
     if (unionVariants.length === 0) {
       return [
         `// type ${typeName} (no variants found)`,
-        `export type ${typeName} = never;`,
+        `${exportKeyword}type ${typeName} = never;`,
       ].join("\n");
     }
 
@@ -112,13 +186,14 @@ export class TypeScriptEmitter {
 
     return [
       `// type ${typeName}`,
-      `export type ${typeName} = ${variants.join(" | ")};`,
+      `${exportKeyword}type ${typeName} = ${variants.join(" | ")};`,
     ].join("\n");
   }
 
   private emitTypeAliasDeclaration(
     node: ElmSyntax.SyntaxNode,
-    source: string
+    source: string,
+    exposedNames: Set<string>
   ): string {
     // Find the type name
     const nameNode = node.namedChildren.find(
@@ -128,6 +203,10 @@ export class TypeScriptEmitter {
       ? source.substring(nameNode.startIndex, nameNode.endIndex)
       : "Unknown";
 
+    // Check if this type should be exported
+    const shouldExport = exposedNames.has("*") || exposedNames.has(typeName);
+    const exportKeyword = shouldExport ? "export " : "";
+
     // Find the type_expression node (it contains the actual type)
     const typeExpr = node.namedChildren.find(
       child => child.type === "type_expression"
@@ -136,7 +215,7 @@ export class TypeScriptEmitter {
     if (!typeExpr) {
       return [
         `// type alias ${typeName} (no type expression found)`,
-        `export type ${typeName} = any;`,
+        `${exportKeyword}type ${typeName} = any;`,
       ].join("\n");
     }
 
@@ -148,7 +227,7 @@ export class TypeScriptEmitter {
 
     return [
       `// type alias ${typeName}`,
-      `export type ${typeName} = ${tsType};`,
+      `${exportKeyword}type ${typeName} = ${tsType};`,
     ].join("\n");
   }
 
@@ -165,7 +244,8 @@ export class TypeScriptEmitter {
 
   private emitValueDeclaration(
     node: ElmSyntax.SyntaxNode,
-    source: string
+    source: string,
+    exposedNames: Set<string>
   ): string {
     // Find the function_declaration_left (has the name and parameters)
     const leftNode = node.namedChildren.find(
@@ -175,7 +255,7 @@ export class TypeScriptEmitter {
     if (!leftNode) {
       return [
         `// value (no function_declaration_left found)`,
-        `export const unknown: any = null;`,
+        `const unknown: any = null;`,
       ].join("\n");
     }
 
@@ -186,6 +266,10 @@ export class TypeScriptEmitter {
     const name = nameNode
       ? source.substring(nameNode.startIndex, nameNode.endIndex)
       : "unknown";
+
+    // Check if this value should be exported
+    const shouldExport = exposedNames.has("*") || exposedNames.has(name);
+    const exportKeyword = shouldExport ? "export " : "";
 
     // Check if there are parameters (patterns after the name)
     const paramPatterns = leftNode.namedChildren.filter(
@@ -203,7 +287,7 @@ export class TypeScriptEmitter {
     if (!bodyNode) {
       return [
         `// value ${name} (no body found)`,
-        `export const ${name} = null as any;`,
+        `${exportKeyword}const ${name} = null as any;`,
       ].join("\n");
     }
 
@@ -215,13 +299,17 @@ export class TypeScriptEmitter {
           .substring(bodyNode.startIndex, bodyNode.endIndex)
           .trim()
           .replace(/(\w+)\s*=\s*/g, "$1: ");
-        return [`// value ${name}`, `export const ${name} = ${body};`].join(
-          "\n"
-        );
+        return [
+          `// value ${name}`,
+          `${exportKeyword}const ${name} = ${body};`,
+        ].join("\n");
       }
       // If it's a function call or other expression, convert it
       const body = this.emitExpression(bodyNode, source);
-      return [`// value ${name}`, `export const ${name} = ${body};`].join("\n");
+      return [
+        `// value ${name}`,
+        `${exportKeyword}const ${name} = ${body};`,
+      ].join("\n");
     }
 
     // It's a function with parameters - generate arrow function
@@ -232,7 +320,7 @@ export class TypeScriptEmitter {
 
     return [
       `// function ${name}`,
-      `export const ${name} = (${params}) => ${body};`,
+      `${exportKeyword}const ${name} = (${params}) => ${body};`,
     ].join("\n");
   }
 
